@@ -51,10 +51,6 @@ get_rok <- function(x) {
   }
 }
 
-
-
-tmp <- sapply(splitted_general, get_rok)
-
 dzielnica <- filter(oferty, cena != "Zapytaj o cenę")[["nazwa"]] %>% 
   as.character() %>% 
   strsplit(", ") %>% 
