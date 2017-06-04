@@ -75,3 +75,4 @@ dat <- data.frame(n_pokoj = sapply(splitted_general, get_pokoj),
   mutate(rok = ifelse(rok < 1500, NA, rok)) %>% # dwa rekordy rok 1 i 6
   cbind(dzielnica)  
   
+write.csv(dat, file = "./data/mieszkania_dane.csv", fileEncoding = "UTF-8")
