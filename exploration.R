@@ -2,7 +2,6 @@ library(dplyr)
 
 load("./data/oferty_2017-04-27.Rdata")
 
-
 splitted_general <- filter(oferty, cena != "Zapytaj o cenę")[["generalInfo"]] %>% 
   as.character() %>% 
   strsplit(", ") 
@@ -51,6 +50,32 @@ get_rok <- function(x) {
   }
 }
 
+get_pietro <- function(x) {
+  res <- x[grepl("piętro", x) | grepl("parter", x)]
+  if(length(res) == 0) {
+    NA
+  } else {
+    strsplit(iconv(res, "UTF-8", "ASCII", sub = " "), " ")[[1]][1] %>% 
+      ifelse(. == "parter", 0, .) %>% 
+      as.numeric
+  }
+}
+
+
+get_pietro_max <- function(x) {
+  res <- x[grepl("piętro", x) | grepl("parter", x)]
+  if(length(res) == 0) {
+    NA
+  } else {
+    strsplit(iconv(res, "UTF-8", "ASCII", sub = " "), " ")[[1]] %>% 
+      last %>% 
+      ifelse(. == "parter", 0, .) %>% 
+      ifelse(. == "tro", NA, .) %>% 
+      as.numeric()
+  }
+}
+
+
 dzielnica <- filter(oferty, cena != "Zapytaj o cenę")[["nazwa"]] %>% 
   as.character() %>% 
   strsplit(", ") %>% 
@@ -67,7 +92,9 @@ dzielnica <- filter(oferty, cena != "Zapytaj o cenę")[["nazwa"]] %>%
 dat <- data.frame(n_pokoj = sapply(splitted_general, get_pokoj),
                   metrarz = sapply(splitted_general, get_metrarz),
                   cena_m2 = sapply(splitted_general, get_cena),
-                  rok = sapply(splitted_general, get_rok)) %>% 
+                  rok = sapply(splitted_general, get_rok),
+                  pietro = sapply(splitted_general, get_pietro),
+                  pietro_maks = sapply(splitted_general, get_pietro_max)) %>% 
   mutate(rok = ifelse(rok < 1500, NA, rok)) %>% # dwa rekordy rok 1 i 6
   cbind(dzielnica)  
   
