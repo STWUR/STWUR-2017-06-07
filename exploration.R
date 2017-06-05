@@ -28,7 +28,7 @@ get_cena <- function(x) {
   }
 }
 
-get_metrarz <- function(x) {
+get_metraz <- function(x) {
   res <- x[grep(" m2", x)]
   if(length(res) == 0) {
     NA
@@ -90,7 +90,7 @@ dzielnica <- filter(oferty, cena != "Zapytaj o cenę")[["nazwa"]] %>%
   rename(dzielnica = new_name)
 
 dat <- data.frame(n_pokoj = sapply(splitted_general, get_pokoj),
-                  metrarz = sapply(splitted_general, get_metrarz),
+                  metraz = sapply(splitted_general, get_metraz),
                   cena_m2 = sapply(splitted_general, get_cena),
                   rok = sapply(splitted_general, get_rok),
                   pietro = sapply(splitted_general, get_pietro),
