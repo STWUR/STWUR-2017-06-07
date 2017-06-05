@@ -21,7 +21,7 @@ library(dplyr)
 mieszkania <- na.omit(read.csv(file = "./data/mieszkania_dane.csv", encoding = "UTF-8"))
 
 mieszkania <- mieszkania %>%
-  mutate(cena = metrarz*cena_m2) %>%
+  mutate(cena = metraz*cena_m2) %>%
   mutate(tanie = cena < 300000) %>%
   select(-cena)
 
