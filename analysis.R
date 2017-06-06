@@ -18,7 +18,7 @@ predict_price3 <- makeRegrTask(id = "cenaMieszkanBezMaksPieter",
 
 
 all_learners <- listLearners()
-filter(all_learners, type == "regr")[["class"]]
+
 learnerRF <- makeLearner("regr.randomForest")
 learnerNN <- makeLearner("regr.nnet")
 learnerSVM <- makeLearner("regr.ksvm")
@@ -41,3 +41,5 @@ as.data.frame(bench_regr)
 getBMRAggrPerformances(bench_regr)
 getBMRPerformances(bench_regr)
 plotBMRBoxplots(bench_regr)
+
+save(bench_regr, bench_cv, bench_ho, file = "./data/regression_cache.RData")
