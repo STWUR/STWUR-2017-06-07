@@ -77,3 +77,8 @@ learnerGLM_ridge <- train(learnerGLM_ridge, predict_affordable_new_features)
 knitr::kable(as.matrix(getLearnerModel(learnerGLM_ridge)$beta))
 
 #jak należy je interpretować?
+
+# jakie zmienne są istotne w modelu?
+learnerRF_imp_trained <- train(learnerRF, predict_affordable_new_features)
+getFeatureImportance(learnerRF_imp_trained)
+
