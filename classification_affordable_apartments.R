@@ -16,10 +16,8 @@ max_rata/(1 + r/12)^liczba_rat/((1 + r/12)-1)*((1 + r/12)^liczba_rat-1)
 
 #wychodzi 300K kredytu
 
-
 library(dplyr)
 library(mlr)
-
 mieszkania <- na.omit(read.csv(file = "./data/mieszkania_dane.csv", encoding = "UTF-8"))
 
 mieszkania <- mieszkania %>%
@@ -27,7 +25,10 @@ mieszkania <- mieszkania %>%
   mutate(tanie = cena < 300000) %>%
   select(-cena)
 
-predict_affordable <- makeClassifTask(id = "affordableApartments", data = mieszkania, target = "tanie")
+#' Pytanie: Jaki procent mieszkań ma cenę poniżej 300K złotych?
+
+predict_affordable <- makeClassifTask(id = "affordableApartments", 
+                                      data = mieszkania, target = "tanie")
 
 all_learners <- listLearners()
 filter(all_learners, type == "classif")[["class"]]
@@ -42,16 +43,27 @@ bench_regr <- benchmark(learners = list(learnerRF,
 
 
 #jak policzyć AUC?
-#potrzebujemy p-stw, a nie tylko etykietek
+#potrzebujemy p-stw, a nie tylko etykietek, zmieniamy opcję predict.type
 learnerGLM <- makeLearner("classif.glmnet", predict.type = "prob")
+# zamiast crossval możemy użyć innych sposobów weryfikacji dobroci modeli,
+# np. holdout czy repcv (więcej info w dokumentacji)
 GLM_probs = crossval(learnerGLM, predict_affordable)
-performance(GLM_probs$pred, measures = list(auc, acc, mmce))
+performance(GLM_probs$pred, measures = list(auc))
+
+listMeasures(predict_affordable)
+
+#' Pytanie: porównaj modele oparte o lasy losowe i sieci neuronowe
+#' pod wzgledem auc i false positives (fp), czyli mieszkań, które
+#' przewidujemy jako tansze, ale w istocie takie nie sa
 
 
-learnerGLM_ridge <- makeLearner("classif.glmnet", lambda = 0.00001)
-learnerGLM_ridge <- train(learnerGLM_ridge, predict_affordable)
+#### Które zmienne są istotne i jaki mają wpływ na koszt mieszkania?
+
+#uczymy uogólniony model liniowy z lasso z konkretną wartością lambda
+learnerGLM_one_lambda <- makeLearner("classif.glmnet", lambda = 0.00001)
+learnerGLM_one_lambda <- train(learnerGLM_one_lambda, predict_affordable)
 #parametry dopasowanego modelu
-getLearnerModel(learnerGLM_ridge)$beta
+getLearnerModel(learnerGLM_one_lambda)$beta
 
 
 #jak poprawić model? Dodać nowe ważne zmienne
@@ -70,15 +82,20 @@ predict_affordable_new_features <-
   makeClassifTask(id = "affordableApartments", data = mieszkanie_new_features, 
                   target = "tanie")
 
-learnerGLM_ridge <- makeLearner("classif.glmnet", lambda = 0.0001)
+# Pytanie: czy mamy lepszą predykcję dla modelu learnerGLM dla nowych danych?
+
+
+#### Istotność współczynników i interpretacja
+
+#uczymy uogólniony model liniowy z lasso z konkretną wartością lambda
+learnerGLM_one_lambda <- makeLearner("classif.glmnet", lambda = 0.0001)
 #lambde da sie wybrac w systematyczny sposob za pomoca mlr
-learnerGLM_ridge <- train(learnerGLM_ridge, predict_affordable_new_features)
+learnerGLM_one_lambda <- train(learnerGLM_one_lambda, predict_affordable_new_features)
 #parametry dopasowanego modelu
-knitr::kable(as.matrix(getLearnerModel(learnerGLM_ridge)$beta))
+knitr::kable(as.matrix(getLearnerModel(learnerGLM_one_lambda)$beta))
 
-#jak należy je interpretować?
+# Pytanie: jak należy interpretować te współczynniki?
 
-# jakie zmienne są istotne w modelu?
+# Podobnie możemy sprawdzić, które zmienne są istotne w modelu lasu losowego?
 learnerRF_imp_trained <- train(learnerRF, predict_affordable_new_features)
 getFeatureImportance(learnerRF_imp_trained)
-
