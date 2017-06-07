@@ -11,6 +11,12 @@ library(dplyr)
 load("./data/regression_cache.RData")
 ```
 
+## Link do repotyzorium
+
+http://tinyurl.com/stwur5 - kody i dane do dzisiejszego spotkania.
+
+Wygenerowanie tej prezentacji wymaga uruchomienia pliku **analysis.R**
+
 ## Uczenie maszynowe w R
 
 Pakiety w **R** implementują większość ze znanych algorytmów uczenia maszynowego.
@@ -78,6 +84,8 @@ getRRPredictionList(bench_cv)
 
 ## Benchmark
 
+Funkcja benchmark to rozszerzenie prostszych funkcji (takich jak **crossval**) na wiele zadań i wiele klasyfikatorów.
+
 ```{r,eval=FALSE}
 bench_regr <- benchmark(learners = list(learnerRF,
                                         learnerNN,
@@ -111,3 +119,13 @@ getBMRPerformances(bench_regr)
 ```{r}
 plotBMRBoxplots(bench_regr)
 ```
+
+## Zadanie
+
+Z pomocą skryptu *classification_affordable_apartments.R* przewidźmy na jakie mieszkanie stać typowego wrocławianina.
+
+http://tinyurl.com/stwur5 - kody i dane do dzisiejszego spotkania.
+
+Dziękujemy firmie Kruk SA za wspieranie spotkań STWURa.
+
+<img src='https://stwur.github.io/STWUR//images/kruk_logo.jpg' id="logo" height="35%" width="35%"/>
