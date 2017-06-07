@@ -18,6 +18,8 @@ max_rata/(1 + r/12)^liczba_rat/((1 + r/12)-1)*((1 + r/12)^liczba_rat-1)
 
 
 library(dplyr)
+library(mlr)
+
 mieszkania <- na.omit(read.csv(file = "./data/mieszkania_dane.csv", encoding = "UTF-8"))
 
 mieszkania <- mieszkania %>%
